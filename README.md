@@ -1,6 +1,6 @@
 # ToDoService
 
-A demo ASP.NET Core Web API for managing a todo list with in-memory storage.
+A demo ASP.NET Core Web API for managing a todo list with EF Core and PostgreSQL.
 
 ## Features
 
@@ -8,6 +8,7 @@ A demo ASP.NET Core Web API for managing a todo list with in-memory storage.
 - Add a new todo item
 - Soft-delete a todo item (`IsDeleted = true`)
 - Layered architecture: Controller -> Service -> Repository
+- DI-based repository implementation with EF Core PostgreSQL
 
 ## Project Structure
 
@@ -41,6 +42,7 @@ Delete:
 ## Prerequisites
 
 - .NET SDK 10.0+
+- PostgreSQL server
 
 ## Build
 
@@ -52,6 +54,19 @@ dotnet build ToDoService.sln
 
 ```bash
 dotnet run --project ToDoService/ToDoService.csproj
+```
+
+PostgreSQL connection is configured in:
+
+- [ToDoService/appsettings.json](ToDoService/appsettings.json)
+- [ToDoService/appsettings.Development.json](ToDoService/appsettings.Development.json)
+
+Default key:
+
+```json
+"ConnectionStrings": {
+  "Postgres": "Host=localhost;Port=5432;Database=todoservice;Username=postgres;Password=postgres"
+}
 ```
 
 ## Docker (One-Command Startup)
@@ -100,5 +115,5 @@ dotnet test ToDoService.sln
 
 ## Notes
 
-- Data is stored in memory and resets when the app restarts.
+- Data is persisted in PostgreSQL.
 - `delete` is a soft delete and does not physically remove array items.
