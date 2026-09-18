@@ -3,12 +3,12 @@ using ToDoService.Repositories;
 
 namespace ToDoService.Services;
 
-public class TodoService
+public class TodoService : ITodoService
 {
     // Repository for in-memory todo persistence.
-    private readonly TodoRepository _repository;
+    private readonly ITodoRepository _repository;
 
-    public TodoService(TodoRepository repository)
+    public TodoService(ITodoRepository repository)
     {
         _repository = repository;
     }

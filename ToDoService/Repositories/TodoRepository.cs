@@ -2,7 +2,7 @@ using ToDoService.Models;
 
 namespace ToDoService.Repositories;
 
-public class TodoRepository
+public class TodoRepository : ITodoRepository
 {
     // In-memory array used as demo storage.
     private TodoItem[] _items = [];

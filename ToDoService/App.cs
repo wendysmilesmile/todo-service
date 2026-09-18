@@ -8,8 +8,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
 // Register application dependencies for DI.
-builder.Services.AddSingleton<TodoRepository>();
-builder.Services.AddScoped<TodoService>();
+builder.Services.AddSingleton<ITodoRepository, TodoRepository>();
+builder.Services.AddScoped<ITodoService, TodoService>();
 
 var app = builder.Build();
 

@@ -9,9 +9,9 @@ namespace ToDoService.Controllers;
 public class TodosController : ControllerBase
 {
     // Service layer used by this controller.
-    private readonly TodoService _service;
+    private readonly ITodoService _service;
 
-    public TodosController(TodoService service)
+    public TodosController(ITodoService service)
     {
         _service = service;
     }
