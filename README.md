@@ -54,6 +54,26 @@ dotnet build ToDoService.sln
 dotnet run --project ToDoService/ToDoService.csproj
 ```
 
+## Docker (One-Command Startup)
+
+Build the image and start the service with one command:
+
+```bash
+docker compose up --build -d
+```
+
+API base URL after startup:
+
+```text
+http://localhost:8080
+```
+
+Stop and remove the container:
+
+```bash
+docker compose down
+```
+
 ## Lint
 
 This repository uses .NET analyzers and code style rules.
