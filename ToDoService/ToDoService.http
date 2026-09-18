@@ -1,6 +1,24 @@
-@ToDoService_HostAddress = http://localhost:5192
+@WebApplication1_HostAddress = http://localhost:5192
 
-GET {{ToDoService_HostAddress}}/weatherforecast/
+GET {{WebApplication1_HostAddress}}/api/todo/list
 Accept: application/json
+
+###
+
+POST {{WebApplication1_HostAddress}}/api/todo/add
+Content-Type: application/json
+
+{
+	"title": "learn asp.net core"
+}
+
+###
+
+POST {{WebApplication1_HostAddress}}/api/todo/delete
+Content-Type: application/json
+
+{
+	"id": 1
+}
 
 ###
