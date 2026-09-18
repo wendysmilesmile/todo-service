@@ -39,66 +39,65 @@ jobs:
       - name: Docker Build Check
         run: docker build -f ToDoService/Dockerfile -t todoservice:ci .
 
-  cd:
-    if: github.event_name == 'push'
-    needs: ci
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and Push Image
-        run: |
-          docker build -f ToDoService/Dockerfile \
-            -t $IMAGE_NAME:${{ github.sha }} \
-            -t $IMAGE_NAME:latest \
-            .
-          docker push $IMAGE_NAME:${{ github.sha }}
-          docker push $IMAGE_NAME:latest
-
-      - name: Create remote deploy directory
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: mkdir -p /opt/todoservice
-
-      - name: Upload docker-compose file to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: deploy/docker-compose.prod.yml
-          target: /opt/todoservice
-          strip_components: 1
-
-      - name: Deploy on server
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            docker login ghcr.io -u '${{ secrets.GHCR_USERNAME }}' -p '${{ secrets.GHCR_TOKEN }}'
-            cat > /opt/todoservice/.env <<'EOF'
-            IMAGE_NAME=${{ env.IMAGE_NAME }}
-            IMAGE_TAG=latest
-            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            EOF
-            docker compose --env-file /opt/todoservice/.env -f /opt/todoservice/docker-compose.prod.yml pull
-            docker compose --env-file /opt/todoservice/.env -f /opt/todoservice/docker-compose.prod.yml up -d
+  # CD job template (currently disabled).
+  # To enable CD, uncomment this block and configure the required secrets.
+  # cd:
+  #   if: github.event_name == 'push'
+  #   needs: ci
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Login to GHCR
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+  #
+  #     - name: Build and Push Image
+  #       run: |
+  #         docker build -f ToDoService/Dockerfile \
+  #           -t $IMAGE_NAME:${{ github.sha }} \
+  #           -t $IMAGE_NAME:latest \
+  #           .
+  #         docker push $IMAGE_NAME:${{ github.sha }}
+  #         docker push $IMAGE_NAME:latest
+  #
+  #     - name: Create remote deploy directory
+  #       uses: appleboy/ssh-action@v1.2.0
+  #       with:
+  #         host: ${{ secrets.DEPLOY_HOST }}
+  #         username: ${{ secrets.DEPLOY_USER }}
+  #         key: ${{ secrets.DEPLOY_SSH_KEY }}
+  #         script: mkdir -p /opt/todoservice
+  #
+  #     - name: Upload docker-compose file to server
+  #       uses: appleboy/scp-action@v0.1.7
+  #       with:
+  #         host: ${{ secrets.DEPLOY_HOST }}
+  #         username: ${{ secrets.DEPLOY_USER }}
+  #         key: ${{ secrets.DEPLOY_SSH_KEY }}
+  #         source: deploy/docker-compose.prod.yml
+  #         target: /opt/todoservice
+  #         strip_components: 1
+  #
+  #     - name: Deploy on server
+  #       uses: appleboy/ssh-action@v1.2.0
+  #       with:
+  #         host: ${{ secrets.DEPLOY_HOST }}
+  #         username: ${{ secrets.DEPLOY_USER }}
+  #         key: ${{ secrets.DEPLOY_SSH_KEY }}
+  #         script: |
+  #           docker login ghcr.io -u '${{ secrets.GHCR_USERNAME }}' -p '${{ secrets.GHCR_TOKEN }}'
+  #           cat > /opt/todoservice/.env <<'EOF'
+  #           IMAGE_NAME=${{ env.IMAGE_NAME }}
+  #           IMAGE_TAG=latest
+  #           EOF
+  #           docker compose --env-file /opt/todoservice/.env -f /opt/todoservice/docker-compose.prod.yml pull
+  #           docker compose --env-file /opt/todoservice/.env -f /opt/todoservice/docker-compose.prod.yml up -d
