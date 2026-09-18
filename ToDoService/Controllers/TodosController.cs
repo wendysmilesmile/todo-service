@@ -20,7 +20,14 @@ public class TodosController : ControllerBase
     [HttpGet("list")]
     public ActionResult<TodoItem[]> List()
     {
-        return Ok(_service.List());
+        try
+        {
+            return Ok(_service.List());
+        }
+        catch
+        {
+            return Ok(Array.Empty<TodoItem>());
+        }
     }
 
     // Adds a new todo item.

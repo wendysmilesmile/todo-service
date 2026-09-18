@@ -1,6 +1,6 @@
 # ToDoService
 
-A demo ASP.NET Core Web API for managing a todo list with EF Core and PostgreSQL.
+A demo ASP.NET Core Web API for managing a todo list with in-memory storage.
 
 ## Features
 
@@ -8,7 +8,7 @@ A demo ASP.NET Core Web API for managing a todo list with EF Core and PostgreSQL
 - Add a new todo item
 - Soft-delete a todo item (`IsDeleted = true`)
 - Layered architecture: Controller -> Service -> Repository
-- DI-based repository implementation with EF Core PostgreSQL
+- DI-based repository implementation with in-memory storage
 
 ## Project Structure
 
@@ -42,7 +42,6 @@ Delete:
 ## Prerequisites
 
 - .NET SDK 10.0+
-- PostgreSQL server
 
 ## Build
 
@@ -56,18 +55,7 @@ dotnet build ToDoService.sln
 dotnet run --project ToDoService/ToDoService.csproj
 ```
 
-PostgreSQL connection is configured in:
-
-- [ToDoService/appsettings.json](ToDoService/appsettings.json)
-- [ToDoService/appsettings.Development.json](ToDoService/appsettings.Development.json)
-
-Default key:
-
-```json
-"ConnectionStrings": {
-  "Postgres": "Host=localhost;Port=5432;Database=todoservice;Username=postgres;Password=postgres"
-}
-```
+The runtime repository is in-memory by default via DI registration in [ToDoService/App.cs](ToDoService/App.cs).
 
 ## Docker (One-Command Startup)
 
@@ -115,7 +103,7 @@ dotnet test ToDoService.sln
 
 ## CI/CD Reference (GitHub Actions)
 
-This repository includes a complete CI/CD workflow:
+This repository includes CI and a disabled CD template:
 
 - Workflow file: [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)
 - Local compose file: [deploy/docker-compose.yml](deploy/docker-compose.yml)
@@ -129,7 +117,18 @@ This repository includes a complete CI/CD workflow:
 - Unit tests
 - Docker build validation
 
-### CD (on push to `master`)
+### CD (currently disabled)
+
+The CD job is commented out in [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml).
+
+To enable CD successfully:
+
+1. Uncomment the `cd` job block in [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml).
+2. Configure the required GitHub Secrets.
+3. Ensure your target server can run Docker and Docker Compose.
+4. Ensure port `8080` is open.
+
+When enabled, CD will:
 
 - Build and push Docker image to GHCR (`ghcr.io/<owner>/<repo>`)
 - Upload deployment compose file to server path `/opt/todoservice`
@@ -144,9 +143,6 @@ Configure the following secrets in repository settings:
 - `DEPLOY_SSH_KEY`: Private SSH key for deployment user
 - `GHCR_USERNAME`: GitHub username that can pull GHCR package
 - `GHCR_TOKEN`: GitHub token with package read permission on server side
-- `POSTGRES_DB`: PostgreSQL database name for production compose
-- `POSTGRES_USER`: PostgreSQL username for production compose
-- `POSTGRES_PASSWORD`: PostgreSQL password for production compose
 
 `GITHUB_TOKEN` is provided automatically by GitHub Actions and is used by the workflow to push images to GHCR.
 
@@ -158,5 +154,5 @@ Configure the following secrets in repository settings:
 
 ## Notes
 
-- Data is persisted in PostgreSQL.
+- Data is stored in memory and resets when the app restarts.
 - `delete` is a soft delete and does not physically remove array items.
