@@ -10,10 +10,12 @@ public class TodosController : ControllerBase
 {
     // Service layer used by this controller.
     private readonly ITodoService _service;
+    private readonly ILogger<TodosController> _logger;
 
-    public TodosController(ITodoService service)
+    public TodosController(ITodoService service, ILogger<TodosController> logger)
     {
         _service = service;
+        _logger = logger;
     }
 
     // Returns all active (not soft-deleted) todo items.
@@ -24,8 +26,14 @@ public class TodosController : ControllerBase
         {
             return Ok(_service.List());
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(
+                ex,
+                "List endpoint failed. Path: {Path}, QueryString: {QueryString}",
+                HttpContext?.Request?.Path.Value,
+                HttpContext?.Request?.QueryString.Value);
+
             return Ok(Array.Empty<TodoItem>());
         }
     }
