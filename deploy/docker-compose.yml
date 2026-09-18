@@ -1,7 +1,7 @@
 services:
   todoservice:
     build:
-      context: .
+      context: ..
       dockerfile: ToDoService/Dockerfile
     container_name: todoservice
     ports:

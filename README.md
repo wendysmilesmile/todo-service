@@ -74,7 +74,7 @@ Default key:
 Build the image and start the service with one command:
 
 ```bash
-docker compose up --build -d
+docker compose -f deploy/docker-compose.yml up --build -d
 ```
 
 API base URL after startup:
@@ -86,7 +86,7 @@ http://localhost:8080
 Stop and remove the container:
 
 ```bash
-docker compose down
+docker compose -f deploy/docker-compose.yml down
 ```
 
 ## Lint
@@ -112,6 +112,49 @@ Run tests:
 ```bash
 dotnet test ToDoService.sln
 ```
+
+## CI/CD Reference (GitHub Actions)
+
+This repository includes a complete CI/CD workflow:
+
+- Workflow file: [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)
+- Local compose file: [deploy/docker-compose.yml](deploy/docker-compose.yml)
+- Production compose file: [deploy/docker-compose.prod.yml](deploy/docker-compose.prod.yml)
+
+### CI (on pull request and push to `master`)
+
+- Restore
+- Build
+- Lint (`dotnet format --verify-no-changes`)
+- Unit tests
+- Docker build validation
+
+### CD (on push to `master`)
+
+- Build and push Docker image to GHCR (`ghcr.io/<owner>/<repo>`)
+- Upload deployment compose file to server path `/opt/todoservice`
+- Deploy with `docker compose` over SSH
+
+### Required GitHub Secrets
+
+Configure the following secrets in repository settings:
+
+- `DEPLOY_HOST`: Target server host or IP
+- `DEPLOY_USER`: SSH username on target server
+- `DEPLOY_SSH_KEY`: Private SSH key for deployment user
+- `GHCR_USERNAME`: GitHub username that can pull GHCR package
+- `GHCR_TOKEN`: GitHub token with package read permission on server side
+- `POSTGRES_DB`: PostgreSQL database name for production compose
+- `POSTGRES_USER`: PostgreSQL username for production compose
+- `POSTGRES_PASSWORD`: PostgreSQL password for production compose
+
+`GITHUB_TOKEN` is provided automatically by GitHub Actions and is used by the workflow to push images to GHCR.
+
+### First-time deployment notes
+
+- Ensure Docker and Docker Compose are installed on the server.
+- Ensure port `8080` is open on the server.
+- Ensure the deployment user can run Docker commands.
 
 ## Notes
 
