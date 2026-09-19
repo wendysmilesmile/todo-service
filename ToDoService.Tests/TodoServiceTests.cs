@@ -1,3 +1,4 @@
+using Moq;
 using ToDoService.Repositories;
 using ToDoService.Services;
 
@@ -5,39 +6,41 @@ namespace ToDoService.Tests;
 
 public class TodoServiceTests
 {
-    [Fact]
-    public void Add_And_List_ShouldReturnCreatedItem()
+    private readonly Mock<TodoRepository> _repositoryMock = new() { CallBase = true };
+
+    private TodoService CreateService()
     {
-        var repository = new TodoRepository();
-        var service = new TodoService(repository);
+        return new TodoService(_repositoryMock.Object);
+    }
+
+    [Fact]
+    public void Add_ShouldReturnCreatedItem()
+    {
+        var service = CreateService();
 
         var created = service.Add("Service Task");
-        var items = service.List();
 
         Assert.Equal(1, created.Id);
-        Assert.Single(items);
-        Assert.Equal("Service Task", items[0].Title);
+        Assert.Equal("Service Task", created.Title);
+        Assert.False(created.IsDeleted);
     }
 
     [Fact]
-    public void Delete_ShouldSoftDeleteItem_AndHideFromList()
+    public void List_ShouldReturnItems()
     {
-        var repository = new TodoRepository();
-        var service = new TodoService(repository);
+        var service = CreateService();
         service.Add("Task A");
 
-        var deleted = service.Delete(1);
         var items = service.List();
 
-        Assert.True(deleted);
-        Assert.Empty(items);
+        Assert.Single(items);
+        Assert.Equal("Task A", items[0].Title);
     }
 
     [Fact]
-    public void Edit_ShouldUpdateTitle_WhenItemExists()
+    public void Edit_ShouldReturnUpdatedItem_WhenItemExists()
     {
-        var repository = new TodoRepository();
-        var service = new TodoService(repository);
+        var service = CreateService();
         service.Add("Task A");
 
         var edited = service.Edit(1, "Task A Updated");
@@ -47,16 +50,23 @@ public class TodoServiceTests
     }
 
     [Fact]
-    public void Delete_ShouldReturnFalse_WhenItemAlreadyDeleted()
+    public void Delete_ShouldReturnFalse_WhenItemDoesNotExist()
     {
-        var repository = new TodoRepository();
-        var service = new TodoService(repository);
+        var service = CreateService();
+
+        var deleted = service.Delete(1);
+
+        Assert.False(deleted);
+    }
+
+    [Fact]
+    public void Delete_ShouldReturnTrue_WhenItemExists()
+    {
+        var service = CreateService();
         service.Add("Task A");
 
-        var firstDelete = service.Delete(1);
-        var secondDelete = service.Delete(1);
+        var deleted = service.Delete(1);
 
-        Assert.True(firstDelete);
-        Assert.False(secondDelete);
+        Assert.True(deleted);
     }
 }

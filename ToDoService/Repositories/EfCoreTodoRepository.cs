@@ -46,8 +46,8 @@ public class EfCoreTodoRepository : ITodoRepository
     // Edits an existing active todo item title.
     public TodoItem? Edit(int id, string title)
     {
-        var item = _dbContext.TodoItems.FirstOrDefault(x => x.Id == id);
-        if (item is null || item.IsDeleted)
+        var item = Query(id);
+        if (item is null)
         {
             return null;
         }
@@ -61,7 +61,7 @@ public class EfCoreTodoRepository : ITodoRepository
     // Soft-deletes an existing todo item.
     public bool Delete(int id)
     {
-        var item = _dbContext.TodoItems.FirstOrDefault(x => x.Id == id);
+        var item = Query(id);
         if (item is null)
         {
             return false;
