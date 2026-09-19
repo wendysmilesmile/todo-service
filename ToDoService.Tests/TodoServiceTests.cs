@@ -32,4 +32,31 @@ public class TodoServiceTests
         Assert.True(deleted);
         Assert.Empty(items);
     }
+
+    [Fact]
+    public void Edit_ShouldUpdateTitle_WhenItemExists()
+    {
+        var repository = new TodoRepository();
+        var service = new TodoService(repository);
+        service.Add("Task A");
+
+        var edited = service.Edit(1, "Task A Updated");
+
+        Assert.NotNull(edited);
+        Assert.Equal("Task A Updated", edited!.Title);
+    }
+
+    [Fact]
+    public void Delete_ShouldReturnFalse_WhenItemAlreadyDeleted()
+    {
+        var repository = new TodoRepository();
+        var service = new TodoService(repository);
+        service.Add("Task A");
+
+        var firstDelete = service.Delete(1);
+        var secondDelete = service.Delete(1);
+
+        Assert.True(firstDelete);
+        Assert.False(secondDelete);
+    }
 }

@@ -9,7 +9,16 @@ POST {{WebApplication1_HostAddress}}/api/todo-item
 Content-Type: application/json
 
 {
-	"title": "learn asp.net core"
+	"title": "do swimming"
+}
+
+###
+
+PATCH {{WebApplication1_HostAddress}}/api/todo-item/1
+Content-Type: application/json
+
+{
+	"title": "do swimming - updated"
 }
 
 ###

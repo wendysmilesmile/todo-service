@@ -22,6 +22,12 @@ public class EfCoreTodoRepository : ITodoRepository
             .ToArray();
     }
 
+    // Queries one active todo item by id.
+    public TodoItem? Query(int id)
+    {
+        return _dbContext.TodoItems.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+    }
+
     // Adds a new todo item and persists it.
     public TodoItem Add(string title)
     {
@@ -37,11 +43,26 @@ public class EfCoreTodoRepository : ITodoRepository
         return item;
     }
 
+    // Edits an existing active todo item title.
+    public TodoItem? Edit(int id, string title)
+    {
+        var item = _dbContext.TodoItems.FirstOrDefault(x => x.Id == id);
+        if (item is null || item.IsDeleted)
+        {
+            return null;
+        }
+
+        item.Title = title;
+        _dbContext.SaveChanges();
+
+        return item;
+    }
+
     // Soft-deletes an existing todo item.
     public bool Delete(int id)
     {
         var item = _dbContext.TodoItems.FirstOrDefault(x => x.Id == id);
-        if (item is null || item.IsDeleted)
+        if (item is null)
         {
             return false;
         }

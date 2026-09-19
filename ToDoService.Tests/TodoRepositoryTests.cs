@@ -57,7 +57,7 @@ public class TodoRepositoryTests
     }
 
     [Fact]
-    public void Delete_ShouldReturnFalse_WhenItemAlreadyDeleted()
+    public void Delete_ShouldReturnTrue_WhenItemAlreadyDeleted()
     {
         var repository = new TodoRepository();
         repository.Add("Task A");
@@ -65,6 +65,28 @@ public class TodoRepositoryTests
 
         var deletedAgain = repository.Delete(1);
 
-        Assert.False(deletedAgain);
+        Assert.True(deletedAgain);
+    }
+
+    [Fact]
+    public void Edit_ShouldUpdateTitle_WhenItemExists()
+    {
+        var repository = new TodoRepository();
+        repository.Add("Task A");
+
+        var edited = repository.Edit(1, "Task A Updated");
+
+        Assert.NotNull(edited);
+        Assert.Equal("Task A Updated", edited!.Title);
+    }
+
+    [Fact]
+    public void Edit_ShouldReturnNull_WhenItemDoesNotExist()
+    {
+        var repository = new TodoRepository();
+
+        var edited = repository.Edit(999, "Task X");
+
+        Assert.Null(edited);
     }
 }

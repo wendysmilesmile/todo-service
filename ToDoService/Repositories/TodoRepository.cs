@@ -16,6 +16,12 @@ public class TodoRepository : ITodoRepository
         return _items.Where(x => !x.IsDeleted).ToArray();
     }
 
+    // Queries one active item by id.
+    public TodoItem? Query(int id)
+    {
+        return _items.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+    }
+
     // Adds a new item into the in-memory array.
     public TodoItem Add(string title)
     {
@@ -32,11 +38,24 @@ public class TodoRepository : ITodoRepository
         return newItem;
     }
 
+    // Edits an existing active item title.
+    public TodoItem? Edit(int id, string title)
+    {
+        var item = _items.FirstOrDefault(x => x.Id == id);
+        if (item is null || item.IsDeleted)
+        {
+            return null;
+        }
+
+        item.Title = title;
+        return item;
+    }
+
     // Soft-deletes an item by setting IsDeleted = true.
     public bool Delete(int id)
     {
         var item = _items.FirstOrDefault(x => x.Id == id);
-        if (item is null || item.IsDeleted)
+        if (item is null)
         {
             return false;
         }

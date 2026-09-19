@@ -34,7 +34,13 @@ public class TodosController : ControllerBase
                 HttpContext?.Request?.Path.Value,
                 HttpContext?.Request?.QueryString.Value);
 
-            return Ok(Array.Empty<TodoItem>());
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new ErrorResponse
+                {
+                    ErrorCode = "500",
+                    ErrorDescription = ex.Message
+                });
         }
     }
 
@@ -42,12 +48,38 @@ public class TodosController : ControllerBase
     [HttpPost("todo-item")]
     public ActionResult<TodoItem> Add([FromBody] AddTodoRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Title))
+        var title = request.Title?.Trim();
+        if (string.IsNullOrWhiteSpace(title))
         {
             return BadRequest("Title is required.");
         }
 
-        var item = _service.Add(request.Title.Trim());
+        var item = _service.Add(title);
+        return Created($"/api/todo-item/{item.Id}", item);
+    }
+
+    // Edits a todo item title.
+    [HttpPatch("todo-item/{id:int}")]
+    public ActionResult<TodoItem> Edit(int id, [FromBody] EditTodoRequest request)
+    {
+        var title = request.Title?.Trim();
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            return BadRequest("Title is required.");
+        }
+
+        var item = _service.Edit(id, title);
+        if (item is null)
+        {
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new ErrorResponse
+                {
+                    ErrorCode = "500",
+                    ErrorDescription = $"Todo item {id} not found."
+                });
+        }
+
         return Ok(item);
     }
 
@@ -58,7 +90,13 @@ public class TodosController : ControllerBase
         var deleted = _service.Delete(id);
         if (!deleted)
         {
-            return NotFound();
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new ErrorResponse
+                {
+                    ErrorCode = "500",
+                    ErrorDescription = $"Todo item {id} not found."
+                });
         }
 
         return NoContent();
@@ -68,5 +106,17 @@ public class TodosController : ControllerBase
     public class AddTodoRequest
     {
         public string Title { get; set; } = string.Empty;
+    }
+
+    // Request body for editing a todo item.
+    public class EditTodoRequest
+    {
+        public string Title { get; set; } = string.Empty;
+    }
+
+    public class ErrorResponse
+    {
+        public string ErrorCode { get; set; } = string.Empty;
+        public string ErrorDescription { get; set; } = string.Empty;
     }
 }
