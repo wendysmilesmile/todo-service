@@ -84,22 +84,6 @@ Stop and remove the container:
 docker compose -f deploy/docker-compose.yml down
 ```
 
-## Lint
-
-This repository uses .NET analyzers and code style rules.
-
-Check formatting and style:
-
-```bash
-dotnet format --verify-no-changes ToDoService.sln
-```
-
-Apply formatting:
-
-```bash
-dotnet format ToDoService.sln
-```
-
 ## Unit Tests
 
 Run tests:
@@ -120,7 +104,6 @@ This repository includes CI and a disabled CD template:
 
 - Restore
 - Build
-- Lint (`dotnet format --verify-no-changes`)
 - Unit tests
 - Docker build validation
 

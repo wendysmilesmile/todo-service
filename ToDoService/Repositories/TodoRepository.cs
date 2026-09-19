@@ -4,8 +4,8 @@ namespace ToDoService.Repositories;
 
 public class TodoRepository : ITodoRepository
 {
-    // In-memory array used as demo storage.
-    private TodoItem[] _items = [];
+    // In-memory List used as demo storage.
+    private readonly List<TodoItem> _items = [];
 
     // Auto-incrementing id seed for new items.
     private int _nextId = 1;
@@ -13,13 +13,16 @@ public class TodoRepository : ITodoRepository
     // Returns only items that are not soft-deleted.
     public TodoItem[] List()
     {
-        return _items.Where(x => !x.IsDeleted).ToArray();
+        return _items
+            .Where(x => !x.IsDeleted)
+            .ToArray();
     }
 
     // Queries one active item by id.
     public TodoItem? Query(int id)
     {
-        return _items.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+        return _items
+            .FirstOrDefault(x => x.Id == id && !x.IsDeleted);
     }
 
     // Adds a new item into the in-memory array.
@@ -32,8 +35,7 @@ public class TodoRepository : ITodoRepository
             IsDeleted = false
         };
 
-        Array.Resize(ref _items, _items.Length + 1);
-        _items[^1] = newItem;
+        _items.Add(newItem);
 
         return newItem;
     }
@@ -41,8 +43,8 @@ public class TodoRepository : ITodoRepository
     // Edits an existing active item title.
     public TodoItem? Edit(int id, string title)
     {
-        var item = _items.FirstOrDefault(x => x.Id == id);
-        if (item is null || item.IsDeleted)
+        var item = Query(id);
+        if (item is null)
         {
             return null;
         }
@@ -54,7 +56,7 @@ public class TodoRepository : ITodoRepository
     // Soft-deletes an item by setting IsDeleted = true.
     public bool Delete(int id)
     {
-        var item = _items.FirstOrDefault(x => x.Id == id);
+        var item = Query(id);
         if (item is null)
         {
             return false;

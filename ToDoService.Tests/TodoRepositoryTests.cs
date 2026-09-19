@@ -57,7 +57,7 @@ public class TodoRepositoryTests
     }
 
     [Fact]
-    public void Delete_ShouldReturnTrue_WhenItemAlreadyDeleted()
+    public void Delete_ShouldReturnFalse_WhenItemAlreadyDeleted()
     {
         var repository = new TodoRepository();
         repository.Add("Task A");
@@ -65,7 +65,7 @@ public class TodoRepositoryTests
 
         var deletedAgain = repository.Delete(1);
 
-        Assert.True(deletedAgain);
+        Assert.False(deletedAgain);
     }
 
     [Fact]
