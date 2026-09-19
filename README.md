@@ -17,9 +17,9 @@ A demo ASP.NET Core Web API for managing a todo list with in-memory storage.
 
 ## API Endpoints
 
-- `GET /api/todo/list`
-- `POST /api/todo/add`
-- `POST /api/todo/delete`
+- `GET /api/todo-items`
+- `POST /api/todo-item`
+- `DELETE /api/todo-item/{id}`
 
 ### Example Request Bodies
 
@@ -31,12 +31,10 @@ Add:
 }
 ```
 
-Delete:
+Delete example request:
 
-```json
-{
-  "id": 1
-}
+```text
+DELETE /api/todo-item/1
 ```
 
 ## Prerequisites

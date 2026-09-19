@@ -5,7 +5,7 @@ using ToDoService.Services;
 namespace ToDoService.Controllers;
 
 [ApiController]
-[Route("api/todo")]
+[Route("api")]
 public class TodosController : ControllerBase
 {
     // Service layer used by this controller.
@@ -19,7 +19,7 @@ public class TodosController : ControllerBase
     }
 
     // Returns all active (not soft-deleted) todo items.
-    [HttpGet("list")]
+    [HttpGet("todo-items")]
     public ActionResult<TodoItem[]> List()
     {
         try
@@ -39,7 +39,7 @@ public class TodosController : ControllerBase
     }
 
     // Adds a new todo item.
-    [HttpPost("add")]
+    [HttpPost("todo-item")]
     public ActionResult<TodoItem> Add([FromBody] AddTodoRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Title))
@@ -52,10 +52,10 @@ public class TodosController : ControllerBase
     }
 
     // Soft-deletes a todo item by setting IsDeleted = true.
-    [HttpPost("delete")]
-    public IActionResult Delete([FromBody] DeleteTodoRequest request)
+    [HttpDelete("todo-item/{id:int}")]
+    public IActionResult Delete(int id)
     {
-        var deleted = _service.Delete(request.Id);
+        var deleted = _service.Delete(id);
         if (!deleted)
         {
             return NotFound();
@@ -68,11 +68,5 @@ public class TodosController : ControllerBase
     public class AddTodoRequest
     {
         public string Title { get; set; } = string.Empty;
-    }
-
-    // Request body for deleting a todo item.
-    public class DeleteTodoRequest
-    {
-        public int Id { get; set; }
     }
 }

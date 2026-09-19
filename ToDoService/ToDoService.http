@@ -1,11 +1,11 @@
 @WebApplication1_HostAddress = http://localhost:8080
 
-GET {{WebApplication1_HostAddress}}/api/todo/list
+GET {{WebApplication1_HostAddress}}/api/todo-items
 Accept: application/json
 
 ###
 
-POST {{WebApplication1_HostAddress}}/api/todo/add
+POST {{WebApplication1_HostAddress}}/api/todo-item
 Content-Type: application/json
 
 {
@@ -14,11 +14,6 @@ Content-Type: application/json
 
 ###
 
-POST {{WebApplication1_HostAddress}}/api/todo/delete
-Content-Type: application/json
-
-{
-	"id": 1
-}
+DELETE {{WebApplication1_HostAddress}}/api/todo-item/1
 
 ###
