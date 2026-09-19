@@ -102,21 +102,4 @@ public class TodosController : ControllerBase
         return NoContent();
     }
 
-    // Request body for creating a todo item.
-    public class AddTodoRequest
-    {
-        public string Title { get; set; } = string.Empty;
-    }
-
-    // Request body for editing a todo item.
-    public class EditTodoRequest
-    {
-        public string Title { get; set; } = string.Empty;
-    }
-
-    public class ErrorResponse
-    {
-        public string ErrorCode { get; set; } = string.Empty;
-        public string ErrorDescription { get; set; } = string.Empty;
-    }
 }
