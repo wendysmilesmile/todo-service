@@ -146,3 +146,10 @@ Configure the following secrets in repository settings:
 
 - Data is stored in memory and resets when the app restarts.
 - `delete` is a soft delete and does not physically remove array items.
+
+## Data Access Strategy
+
+- This project includes an `EfCoreTodoRepository` implementation in [ToDoService/Repositories/EfCoreTodoRepository.cs](ToDoService/Repositories/EfCoreTodoRepository.cs).
+- The current runtime uses in-memory storage for demo/testing simplicity.
+- In real production systems, in-memory storage should be replaced with a database-backed repository so data is persisted and shared across instances.
+- Typical production setup: EF Core + relational database (for example PostgreSQL or SQL Server).
