@@ -28,6 +28,12 @@ public class TodoService : ITodoService
     // Edits an existing todo item title.
     public TodoItem? Edit(int id, string title)
     {
+        var item = _repository.Query(id);
+        if (item is null)
+        {
+            return null;
+        }
+
         return _repository.Edit(id, title);
     }
 

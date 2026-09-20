@@ -43,11 +43,7 @@ public class TodoRepository : ITodoRepository
     // Edits an existing active item title.
     public TodoItem? Edit(int id, string title)
     {
-        var item = Query(id);
-        if (item is null)
-        {
-            return null;
-        }
+        var item = _items.First(x => x.Id == id);
 
         item.Title = title;
         return item;
@@ -56,11 +52,7 @@ public class TodoRepository : ITodoRepository
     // Soft-deletes an item by setting IsDeleted = true.
     public bool Delete(int id)
     {
-        var item = Query(id);
-        if (item is null)
-        {
-            return false;
-        }
+        var item = _items.First(x => x.Id == id);
 
         item.IsDeleted = true;
         return true;
