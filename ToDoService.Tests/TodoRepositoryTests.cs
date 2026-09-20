@@ -48,22 +48,20 @@ public class TodoRepositoryTests
     }
 
     [Fact]
-    public void Delete_ShouldReturnFalse_WhenItemDoesNotExist()
+    public void Delete_ShouldThrow_WhenItemDoesNotExist()
     {
-        var deleted = Repository.Delete(404);
-
-        Assert.False(deleted);
+        Assert.Throws<InvalidOperationException>(() => Repository.Delete(404));
     }
 
     [Fact]
-    public void Delete_ShouldReturnFalse_WhenItemAlreadyDeleted()
+    public void Delete_ShouldReturnTrue_WhenItemAlreadyDeleted()
     {
         Repository.Add("Task A");
         Repository.Delete(1);
 
         var deletedAgain = Repository.Delete(1);
 
-        Assert.False(deletedAgain);
+        Assert.True(deletedAgain);
     }
 
     [Fact]
@@ -78,10 +76,8 @@ public class TodoRepositoryTests
     }
 
     [Fact]
-    public void Edit_ShouldReturnNull_WhenItemDoesNotExist()
+    public void Edit_ShouldThrow_WhenItemDoesNotExist()
     {
-        var edited = Repository.Edit(999, "Task X");
-
-        Assert.Null(edited);
+        Assert.Throws<InvalidOperationException>(() => Repository.Edit(999, "Task X"));
     }
 }
