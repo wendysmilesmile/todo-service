@@ -18,6 +18,8 @@ builder.Services.AddCors(options =>
 });
 
 // Register application dependencies for DI.
+// Use Singleton for the in-memory repository so all requests share the same state.
+// If this repository is backed by EF Core DbContext, use Scoped instead.
 builder.Services.AddSingleton<ITodoRepository, TodoRepository>();
 
 builder.Services.AddScoped<ITodoService, TodoService>();
